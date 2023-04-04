@@ -10,37 +10,16 @@ bl_info = {
     "category": "Mesh",
 }
 
-
-# class MyAddonPreferences(bpy.types.AddonPreferences):
-#     bl_idname = __package__
-
-#     default_color: bpy.props.FloatVectorProperty(
-#         name="Default Color",
-#         subtype='COLOR',
-#         size=4,
-#         default=(0.3, .3, 0.3, 1.0),
-#         description="Set the default color"
-#     )
-#     edge_color: bpy.props.FloatVectorProperty(
-#         name="Edge Color",
-#         subtype='COLOR',
-#         size=4,
-#         default=(1, 0.627, 0.0, 1.0),
-#         description="Set the default color"
-#     )
-
-#     def draw(self, context):
-#         layout = self.layout
-#         layout.prop(self, "default_color")
-#         layout.prop(self, "edge_color")
-
-save = (1, 0.627, 0.0)
+# Use the Vertex Select Color for Edge Select
+save = bpy.context.preferences.themes[0].view_3d.vertex_select[:3]
 dark = (.3, .3, .3)
 
 # @persistent
 
 
 def do_select_settings(scene):
+    if bpy.context.mode != 'EDIT_MESH':
+        return
     space = None
     for area in bpy.context.screen.areas:
         if area.type == 'VIEW_3D':
@@ -50,13 +29,6 @@ def do_select_settings(scene):
         return
 
     theme = bpy.context.preferences.themes[0]
-
-    # col   = bpy.context.preferences.addons[__package__].preferences.edge_color
-    # print(dir(c))
-
-    # save = bpy.context.preferences.addons[__package__].preferences.edge_color[:3]
-
-    # bpy.context.preferences.addons[__package__].preferences.default_color
 
     vert = bpy.context.tool_settings.mesh_select_mode[0]
     edge = bpy.context.tool_settings.mesh_select_mode[1]
@@ -106,14 +78,12 @@ def do_select_settings(scene):
 
 
 def register():
-    # bpy.utils.register_class(MyAddonPreferences)
     bpy.app.handlers.depsgraph_update_post.append(do_select_settings)
 
 
 def unregister():
     try:
         bpy.app.handlers.depsgraph_update_post.remove(do_select_settings)
-    #    bpy.utils.unregister_class(MyAddonPreferences)
     except:
         pass
 
